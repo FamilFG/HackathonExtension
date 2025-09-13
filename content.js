@@ -24,7 +24,12 @@
     function fetchAnswer(mode) {
         currentMode = mode;
         const answerDiv = document.getElementById("gptAnswer");
+        const controls = tooltip.querySelector(".gpt-tooltip-controls");
+
+        // Скрываем кнопки при загрузке
+        controls.style.display = "none";
         answerDiv.textContent = "Loading...";
+
         fetch("http://127.0.0.1:5000/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -35,25 +40,41 @@
                 if (mode === currentMode) {
                     answerDiv.innerHTML = highlightSelected(data.answer, selectedText);
                     answerDiv.style.fontSize = "13px";
+                    // Показываем кнопки после загрузки
+                    controls.style.display = "flex";
                 }
             })
             .catch(err => {
                 if (mode === currentMode) {
                     answerDiv.textContent = "Error: " + err.message;
+                    console.error(err);
+                    // Показываем кнопки даже если ошибка
+                    controls.style.display = "flex";
                 }
             });
     }
 
-    document.addEventListener("mouseup", () => {
-        selectedText = window.getSelection().toString().trim();
-        if (selectedText.length > 0) {
-            const rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
+
+    document.addEventListener("mouseup", (e) => {
+        if (tooltip.contains(e.target)) return; // не реагировать на клики по tooltip
+
+        const selection = window.getSelection();
+        selectedText = selection.toString().trim();
+
+        if (selectedText.length > 0 && selection.rangeCount > 0) {
+            // Сбрасываем режим при новом выделении
+            isLarge = false;
+            currentMode = "normal";
+
+            const rect = selection.getRangeAt(0).getBoundingClientRect();
             tooltip.style.top = `${rect.bottom + window.scrollY + 5}px`;
             tooltip.style.left = `${rect.left + window.scrollX}px`;
             tooltip.style.display = "block";
-            
-            document.getElementById("toggleBtn").textContent = "Academic";
+
+            tooltip.querySelector("#toggleBtn").textContent = "Academic";
             document.getElementById("gptAnswer").style.fontSize = "13px";
+
+            // Запрашиваем normal
             fetchAnswer("normal");
         } else {
             tooltip.style.display = "none";
@@ -84,4 +105,3 @@
         fetchAnswer(isLarge ? "academic" : "normal");
     });
 })();
-
