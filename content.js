@@ -1,5 +1,4 @@
 (function () {
-    // --- Create tooltip ---
     const tooltip = document.createElement("div");
     tooltip.className = "gpt-tooltip";
     tooltip.innerHTML = `
@@ -15,30 +14,33 @@
 
     let selectedText = "";
     let isLarge = false;
+    let currentMode = "normal";
 
     function highlightSelected(text, selected) {
-        // Escape special regex characters in selected text
         const escaped = selected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        // Replace all occurrences (case-insensitive) with bold
         return text.replace(new RegExp(escaped, 'gi'), match => `<b>${match}</b>`);
     }
 
     function fetchAnswer(mode) {
+        currentMode = mode;
         const answerDiv = document.getElementById("gptAnswer");
         answerDiv.textContent = "Loading...";
         fetch("http://127.0.0.1:5000/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: selectedText, mode })
+            body: JSON.stringify({ text: selectedText, mod: mode })
         })
             .then(res => res.json())
             .then(data => {
-                // Bold the selected word/phrase in the answer
-                answerDiv.innerHTML = highlightSelected(data.answer, selectedText);
-                answerDiv.style.fontSize = "13px"; // Always same font size
+                if (mode === currentMode) {
+                    answerDiv.innerHTML = highlightSelected(data.answer, selectedText);
+                    answerDiv.style.fontSize = "13px";
+                }
             })
             .catch(err => {
-                answerDiv.textContent = "Error: " + err.message;
+                if (mode === currentMode) {
+                    answerDiv.textContent = "Error: " + err.message;
+                }
             });
     }
 
@@ -49,8 +51,8 @@
             tooltip.style.top = `${rect.bottom + window.scrollY + 5}px`;
             tooltip.style.left = `${rect.left + window.scrollX}px`;
             tooltip.style.display = "block";
-            isLarge = false;
-            document.getElementById("toggleBtn").textContent = "More";
+            
+            document.getElementById("toggleBtn").textContent = "Academic";
             document.getElementById("gptAnswer").style.fontSize = "13px";
             fetchAnswer("normal");
         } else {
@@ -65,22 +67,21 @@
     });
 
     tooltip.querySelector("#toggleBtn").addEventListener("click", () => {
-        // Show loading immediately, then fetch the correct mode
         document.getElementById("gptAnswer").textContent = "Loading...";
         if (!isLarge) {
-            fetchAnswer("more");
+            fetchAnswer("academic");
             isLarge = true;
-            tooltip.querySelector("#toggleBtn").textContent = "Less";
+            tooltip.querySelector("#toggleBtn").textContent = "Normal";
         } else {
             fetchAnswer("normal");
             isLarge = false;
-            tooltip.querySelector("#toggleBtn").textContent = "More";
+            tooltip.querySelector("#toggleBtn").textContent = "Academic";
         }
     });
 
     tooltip.querySelector("#refreshBtn").addEventListener("click", () => {
-        // Always refresh with the current mode
         document.getElementById("gptAnswer").textContent = "Loading...";
-        fetchAnswer(isLarge ? "more" : "normal");
+        fetchAnswer(isLarge ? "academic" : "normal");
     });
 })();
+
