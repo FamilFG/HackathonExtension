@@ -5,7 +5,7 @@ import google.generativeai as genai
 new_server = Flask(__name__)
 CORS(new_server)
 
-genai.configure(api_key="AIzaSyDIrHhisPcuFKaww3Y0mxdyAunwxZaq38g")
+genai.configure(api_key="AIzaSyBIIf3ILrh8BYNjLMEYfyOifP112546Cc8")
 model = genai.GenerativeModel("gemini-2.5-flash")
 
 @new_server.route("/analyze", methods=["POST"])
