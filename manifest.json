@@ -8,15 +8,15 @@
     "service_worker": "background.js"
   },
   "icons": {
-    "16": "icons/text.jpg",
-    "48": "icons/text (1).jpg",
-    "128": "icons/text (2).jpg"
+    "16": "icons/text.png",
+    "48": "icons/text (1).png",
+    "128": "icons/text (2).png"
   },
   "action": {
     "default_icon": {
-      "16": "icons/text.jpg",
-      "48": "icons/text (1).jpg",
-      "128": "icons/text (2).jpg"
+      "16": "icons/text.png",
+      "48": "icons/text (1).png",
+      "128": "icons/text (2).png"
     },
     "default_title": "TextHelper"
   },
