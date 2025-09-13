@@ -40,7 +40,6 @@
                 if (mode === currentMode) {
                     answerDiv.innerHTML = highlightSelected(data.answer, selectedText);
                     answerDiv.style.fontSize = "13px";
-                    // Показываем кнопки после загрузки
                     controls.style.display = "flex";
                 }
             })
@@ -48,7 +47,6 @@
                 if (mode === currentMode) {
                     answerDiv.textContent = "Error: " + err.message;
                     console.error(err);
-                    // Показываем кнопки даже если ошибка
                     controls.style.display = "flex";
                 }
             });
@@ -56,13 +54,12 @@
 
 
     document.addEventListener("mouseup", (e) => {
-        if (tooltip.contains(e.target)) return; // не реагировать на клики по tooltip
+        if (tooltip.contains(e.target)) return; 
 
         const selection = window.getSelection();
         selectedText = selection.toString().trim();
 
         if (selectedText.length > 0 && selection.rangeCount > 0) {
-            // Сбрасываем режим при новом выделении
             isLarge = false;
             currentMode = "normal";
 
@@ -74,7 +71,6 @@
             tooltip.querySelector("#toggleBtn").textContent = "Academic";
             document.getElementById("gptAnswer").style.fontSize = "13px";
 
-            // Запрашиваем normal
             fetchAnswer("normal");
         } else {
             tooltip.style.display = "none";
